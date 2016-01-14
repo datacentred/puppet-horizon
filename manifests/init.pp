@@ -260,6 +260,11 @@
 #    (optional) The session timeout for horizon in seconds. After this manys seconds of inavtivity
 #    the user is logged out.
 #    Defaults to 1800.
+#  
+#  [*password_autocomplete*]
+#    (optional) When the flag is set to off the users browser is instructed to no autofill the login
+#    form with cached credentials.
+#    Defaults to off
 #
 # === Examples
 #
@@ -322,6 +327,7 @@ class horizon(
   $image_backend                       = {},
   $overview_days_range                 = undef,
   $session_timeout                     = 1800,
+  $password_autocomplete               = 'off',
   # DEPRECATED PARAMETERS
   $can_set_mount_point                 = undef,
   $vhost_extra_params                  = undef,

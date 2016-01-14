@@ -104,6 +104,7 @@ HORIZON_CONFIG = {
 
 # Turn off browser autocompletion for the login form if so desired.
 # HORIZON_CONFIG["password_autocomplete"] = "off"
+HORIZON_CONFIG["password_autocomplete"] = "<%= @password_autocomplete %>"
 
 LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 
