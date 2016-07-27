@@ -285,6 +285,11 @@
 #  [*tuskar_ui_deployment_mode*]
 #    (optional) Tuskar-UI - Deployment mode ('poc' or 'scale')
 #    Defaults to undef
+#  
+#  [*password_autocomplete*]
+#    (optional) When the flag is set to off the users browser is instructed to no autofill the login
+#    form with cached credentials.
+#    Defaults to off
 #
 # === Examples
 #
@@ -348,6 +353,7 @@ class horizon(
   $vhost_extra_params                  = undef,
   $available_themes                    = false,
   $default_theme                       = false,
+  $password_autocomplete               = 'off',
   # DEPRECATED PARAMETERS
   $custom_theme_path                   = undef,
   $fqdn                                = undef,
