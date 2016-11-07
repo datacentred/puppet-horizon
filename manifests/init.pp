@@ -248,9 +248,9 @@
 #    Defaults to 'UTC'.
 #
 #  [*available_themes*]
-#    (optional) Hash of available themes. Each hash must have the followings keys
-#    for themes to be made available; name, label, path.
-#    Defaults to false
+#    (optional) An array of hashes detailing available themes. Each hash must
+#    have the followings keys for themes to be made available; name, label,
+#    path. Defaults to false
 #
 #    { 'name' => 'theme_name', 'label' => 'theme_label', 'path' => 'theme_path' }
 #
@@ -262,6 +262,11 @@
 #      ]
 #    }
 #
+#   Or in Hiera:
+#   horizon::available_themes:
+#     - { name: 'default', label: 'Default', path: 'themes/default' }
+#     - { name: 'material', label: 'Material', path: 'themes/material' }
+#
 #  [*default_theme*]
 #    (optional) The default theme to use from list of available themes. Value should be theme_name.
 #    Defaults to false
@@ -269,6 +274,15 @@
 #  [*password_retrieve*]
 #     (optional) Enables the use of 'Retrieve Password' in the Horizon Web UI.
 #     Defaults to false
+# [*password_autocomplete*]
+#   (optional) Whether to instruct the client browser to autofill the login form password
+#   Valid values are 'on' and 'off'
+#   Defaults to 'off'
+#
+# [*images_panel*]
+#   (optional) Enabled panel for images.
+#   Valid values are 'legacy' and 'angular'
+#   Defaults to 'legacy'
 #
 # === DEPRECATED group/name
 #
@@ -364,6 +378,8 @@ class horizon(
   $available_themes                    = false,
   $default_theme                       = false,
   $password_retrieve                   = false,
+  $password_autocomplete               = 'off',
+  $images_panel                        = 'legacy',
   # DEPRECATED PARAMETERS
   $custom_theme_path                   = undef,
   $fqdn                                = undef,
@@ -379,7 +395,10 @@ class horizon(
   }
 
   if $fqdn {
-    warning('Parameter fqdn is deprecated. Please use parameter allowed_hosts for setting ALLOWED_HOSTS in settings_local.py and parameter server_aliases for setting ServerAlias directives in vhost.conf.')
+
+    warning("Parameter fqdn is deprecated. Please use parameter allowed_hosts for setting ALLOWED_HOSTS in \
+settings_local.py and parameter server_aliases for setting ServerAlias directives in vhost.conf.")
+
     $final_allowed_hosts = $fqdn
     $final_server_aliases = $fqdn
   } else {
@@ -435,11 +454,13 @@ class horizon(
   $keystone_options_real   = merge($keystone_defaults, $keystone_options)
   $neutron_options_real    = merge($neutron_defaults,$neutron_options)
   validate_hash($api_versions)
+  validate_re($password_autocomplete, ['^on$', '^off$'])
+  validate_re($images_panel, ['^legacy$', '^angular$'])
 
   if $cache_backend =~ /MemcachedCache/ {
     ensure_packages('python-memcache',
       { name   => $::horizon::params::memcache_package,
-        tag    => ['openstack', 'horizon-package']})
+        tag    => ['openstack']})
   }
 
   package { 'horizon':

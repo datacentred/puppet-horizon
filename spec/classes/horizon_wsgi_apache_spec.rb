@@ -176,6 +176,25 @@ describe 'horizon::wsgi::apache' do
 
       end
 
+      context 'with root_url set to /' do
+        before do
+          params.merge!({
+            :root_url => '/',
+          })
+        end
+
+        it 'should not configure redirectmatch' do
+          is_expected.to_not contain_apache__vhost('horizon_vhost').with(
+            'redirectmatch_regexp' => '^/$',
+            'redirectmatch_dest'   => '/'
+          )
+          is_expected.to_not contain_apache__vhost('horizon_ssl_vhost').with(
+            'redirectmatch_regexp' => '^/$',
+            'redirectmatch_dest'   => '/'
+          )
+        end
+      end
+
 
     end
   end
@@ -223,7 +242,6 @@ describe 'horizon::wsgi::apache' do
 
         facts.merge!(OSDefaults.get_facts({
           :fqdn           => 'some.host.tld',
-          :processorcount => 2,
           :concat_basedir => '/var/lib/puppet/concat'
         }))
       end
